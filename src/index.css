@@ -18,7 +18,7 @@
 body {
   margin: 0;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  background-image: linear-gradient(rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8)),
+  background-image: linear-gradient(rgba(102, 157, 234, 0.8), rgba(75, 111, 162, 0.8)),
     url('https://i.imgur.com/Zk6TR5k.jpeg');
 
   background-size: cover;
