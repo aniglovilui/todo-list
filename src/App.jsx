@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTodos } from './hooks/useTodos';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import TodoFilter from './components/TodoFilter';
@@ -7,93 +8,25 @@ import HelpModal from './components/HelpModal';
 import { ClipboardList, HelpCircle } from 'lucide-react';
 
 function App() {
-  // функция инициализации начальных состояний
-  const initializeState = () => {
-    try {
-      const savedTodos = localStorage.getItem('todos');
-      const savedInputText = localStorage.getItem('todoInputText');
-      const savedEditingId = localStorage.getItem('editingTodoId');
-      const savedFilter = localStorage.getItem('todoFilter');
+  const {
+    todos,
+    filter,
+    editingTodo,
+    inputText,
+    totalTodos,
+    completedTodos,
+    activeTodos,
+    setInputText,
+    addTodo,
+    toggleTodo,
+    deleteTodo,
+    startEdit,
+    saveEdit,
+    cancelEdit,
+    handleFilterChange,
+  } = useTodos();
 
-      const todos = savedTodos ? JSON.parse(savedTodos) : [];
-      const inputText = savedInputText || '';
-      const filter = savedFilter || 'all';
-
-      // восстанавливаем редактирование только если задача существует
-      let editingTodo = null;
-      if (savedEditingId) {
-        editingTodo = todos.find(todo => todo.id === savedEditingId) || null;
-        // если задача не найдена очищаем невалидный id
-        if (!editingTodo) {
-          localStorage.removeItem('editingTodoId');
-        }
-      }
-
-      return {
-        todos,
-        inputText,
-        editingTodo,
-        editingTodoId: editingTodo ? savedEditingId : null,
-        filter,
-      };
-    } catch (error) {
-      console.error('Error loading state from localStorage:', error);
-      return {
-        todos: [],
-        inputText: '',
-        editingTodo: null,
-        editingTodoId: null,
-        filter: 'all',
-      };
-    }
-  };
-
-  const initialState = initializeState();
-
-  const [todos, setTodos] = useState(initialState.todos);
-  const [filter, setFilter] = useState(initialState.filter);
-  const [editingTodo, setEditingTodo] = useState(initialState.editingTodo);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const [inputText, setInputText] = useState(initialState.inputText);
-  const [editingTodoId, setEditingTodoId] = useState(initialState.editingTodoId);
-
-  // сохранения в localStorage
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('todoFilter', filter);
-    } catch (error) {
-      console.error('Error saving filter to localStorage:', error);
-    }
-  }, [filter]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('todoInputText', inputText);
-    } catch (error) {
-      console.error('Error saving input text:', error);
-    }
-  }, [inputText]);
-
-  useEffect(() => {
-    try {
-      if (editingTodoId) {
-        localStorage.setItem('editingTodoId', editingTodoId);
-      } else {
-        localStorage.removeItem('editingTodoId');
-      }
-    } catch (error) {
-      console.error('Error saving editing state:', error);
-    }
-  }, [editingTodoId]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('todos', JSON.stringify(todos));
-    } catch (error) {
-      console.error('Error saving todos to localStorage:', error);
-    }
-  }, [todos]);
 
   // обработчик esc для модалки
   useEffect(() => {
@@ -121,63 +54,6 @@ function App() {
         return true;
     }
   });
-
-  const totalTodos = todos.length;
-  const completedTodos = todos.filter(todo => todo.completed).length;
-  const activeTodos = totalTodos - completedTodos;
-
-  // обработчики
-  const addTodo = text => {
-    const newTodo = {
-      id: Date.now().toString(),
-      text,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    };
-    setTodos(prevTodos => [...prevTodos, newTodo]);
-    setInputText('');
-  };
-
-  const toggleTodo = id => {
-    setTodos(prevTodos =>
-      prevTodos.map(todo => (todo.id === id ? { ...todo, completed: !todo.completed } : todo))
-    );
-  };
-
-  const deleteTodo = id => {
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
-
-    if (editingTodo && editingTodo.id === id) {
-      setEditingTodo(null);
-      setEditingTodoId(null);
-      setInputText('');
-    }
-  };
-
-  const startEdit = todo => {
-    setEditingTodo(todo);
-    setEditingTodoId(todo.id);
-    setInputText(todo.text);
-  };
-
-  const saveEdit = (id, newText) => {
-    setTodos(prevTodos =>
-      prevTodos.map(todo => (todo.id === id ? { ...todo, text: newText } : todo))
-    );
-    setEditingTodo(null);
-    setEditingTodoId(null);
-    setInputText('');
-  };
-
-  const cancelEdit = () => {
-    setEditingTodo(null);
-    setEditingTodoId(null);
-    setInputText('');
-  };
-
-  const handleFilterChange = newFilter => {
-    setFilter(newFilter);
-  };
 
   const openHelpModal = () => setIsHelpModalOpen(true);
   const closeHelpModal = () => setIsHelpModalOpen(false);
@@ -215,7 +91,7 @@ function App() {
             <TodoFilter currentFilter={filter} onFilterChange={handleFilterChange} />
           </div>
 
-          <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
             {/* список задач */}
             <TodoList
               todos={filteredTodos}
