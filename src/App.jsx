@@ -27,38 +27,6 @@ function App() {
     handleFilterChange,
   } = useTodos();
 
-  // const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-
-  // // обработчик esc для модалки
-  // useEffect(() => {
-  //   if (!isHelpModalOpen) {
-  //     return;
-  //   }
-  //   const handleEscape = e => {
-  //     if (e.key === 'Escape' && isHelpModalOpen) {
-  //       setIsHelpModalOpen(false);
-  //     }
-  //   };
-
-  //   document.addEventListener('keydown', handleEscape);
-  //   return () => document.removeEventListener('keydown', handleEscape);
-  // }, [isHelpModalOpen]);
-
-  // // фильтрация задач
-  // const filteredTodos = todos.filter(todo => {
-  //   switch (filter) {
-  //     case 'active':
-  //       return !todo.completed;
-  //     case 'completed':
-  //       return todo.completed;
-  //     default:
-  //       return true;
-  //   }
-  // });
-
-  // const openHelpModal = () => setIsHelpModalOpen(true);
-  // const closeHelpModal = () => setIsHelpModalOpen(false);
-
   const { isOpen: isHelpModalOpen, open: openHelpModal, close: closeHelpModal } = useModal();
 
   return (

@@ -86,7 +86,7 @@ export const useTodos = () => {
       completed: false,
       createdAt: new Date().toISOString(),
     };
-    setTodos(prev => [...prev, newTodo]);
+    setTodos(prev => [newTodo, ...prev]);
     setInputText('');
   };
 
