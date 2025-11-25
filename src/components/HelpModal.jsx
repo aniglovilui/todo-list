@@ -12,7 +12,7 @@ const HelpModal = ({ isOpen, onClose }) => {
   const tips = [
     {
       icon: '💾',
-      color: 'grey',
+      color: 'plain',
       title: 'Автосохранение',
       description:
         'Все данные сохраняются автоматически: задачи, текст ввода, режим редактирования и выбранный фильтр',
@@ -50,8 +50,20 @@ const HelpModal = ({ isOpen, onClose }) => {
     },
   ];
 
+  const hotKeys = [
+    {
+      title: 'Esc',
+      description: 'Закрыть модальное окно',
+    },
+    {
+      title: 'Enter',
+      description: 'Добавить/сохранить задачу',
+    },
+  ];
+
   const getColorClasses = color => {
     const colors = {
+      plain: 'bg-trsnsparent text-gray-600',
       blue: 'bg-blue-100 text-blue-600',
       green: 'bg-green-100 text-green-600',
       purple: 'bg-purple-100 text-purple-600',
@@ -88,18 +100,18 @@ const HelpModal = ({ isOpen, onClose }) => {
 
           {/* содержимое подсказок */}
           <div className="space-y-4 text-gray-600">
-            {tips.map((tip, index) => (
-              <div key={index} className="flex items-start space-x-3">
+            {tips.map(({ title, color, icon, description }) => (
+              <div key={title} className="flex items-start space-x-3">
                 <div
                   className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5 ${getColorClasses(
-                    tip.color
+                    color
                   )}`}
                 >
-                  <span className="text-sm font-medium">{tip.icon}</span>
+                  <span className="text-sm font-medium">{icon}</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">{tip.title}</h3>
-                  <p className="text-sm">{tip.description}</p>
+                  <h3 className="font-semibold text-gray-800">{title}</h3>
+                  <p className="text-sm">{description}</p>
                 </div>
               </div>
             ))}
@@ -109,18 +121,14 @@ const HelpModal = ({ isOpen, onClose }) => {
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h3 className="font-semibold text-gray-800 mb-2">Горячие клавиши</h3>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <kbd className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded">
-                  Esc
-                </kbd>
-                <span className="text-gray-600">Закрыть модальное окно</span>
-              </div>
-              <div className="flex justify-between">
-                <kbd className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded">
-                  Enter
-                </kbd>
-                <span className="text-gray-600">Добавить/сохранить задачу</span>
-              </div>
+              {hotKeys.map(({ title, description }) => (
+                <div key={title} className="flex justify-between">
+                  <kbd className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded">
+                    {title}
+                  </kbd>
+                  <span className="text-gray-600">{description}</span>
+                </div>
+              ))}
             </div>
           </div>
 
