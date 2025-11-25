@@ -93,8 +93,11 @@ function App() {
     }
   }, [todos]);
 
-  // обработчик esc для модалки ????????????????
+  // обработчик esc для модалки
   useEffect(() => {
+    if (!isHelpModalOpen) {
+      return;
+    }
     const handleEscape = e => {
       if (e.key === 'Escape' && isHelpModalOpen) {
         setIsHelpModalOpen(false);
@@ -105,7 +108,7 @@ function App() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isHelpModalOpen]);
 
-  // фильтрация задач ?????????????????????
+  // фильтрация задач
   const filteredTodos = todos.filter(todo => {
     switch (filter) {
       case 'active':
