@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import { useTodos } from './hooks/useTodos';
+import { useModal } from './hooks/useModal';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import TodoFilter from './components/TodoFilter';
@@ -26,37 +27,39 @@ function App() {
     handleFilterChange,
   } = useTodos();
 
-  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  // const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
-  // обработчик esc для модалки
-  useEffect(() => {
-    if (!isHelpModalOpen) {
-      return;
-    }
-    const handleEscape = e => {
-      if (e.key === 'Escape' && isHelpModalOpen) {
-        setIsHelpModalOpen(false);
-      }
-    };
+  // // обработчик esc для модалки
+  // useEffect(() => {
+  //   if (!isHelpModalOpen) {
+  //     return;
+  //   }
+  //   const handleEscape = e => {
+  //     if (e.key === 'Escape' && isHelpModalOpen) {
+  //       setIsHelpModalOpen(false);
+  //     }
+  //   };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isHelpModalOpen]);
+  //   document.addEventListener('keydown', handleEscape);
+  //   return () => document.removeEventListener('keydown', handleEscape);
+  // }, [isHelpModalOpen]);
 
-  // фильтрация задач
-  const filteredTodos = todos.filter(todo => {
-    switch (filter) {
-      case 'active':
-        return !todo.completed;
-      case 'completed':
-        return todo.completed;
-      default:
-        return true;
-    }
-  });
+  // // фильтрация задач
+  // const filteredTodos = todos.filter(todo => {
+  //   switch (filter) {
+  //     case 'active':
+  //       return !todo.completed;
+  //     case 'completed':
+  //       return todo.completed;
+  //     default:
+  //       return true;
+  //   }
+  // });
 
-  const openHelpModal = () => setIsHelpModalOpen(true);
-  const closeHelpModal = () => setIsHelpModalOpen(false);
+  // const openHelpModal = () => setIsHelpModalOpen(true);
+  // const closeHelpModal = () => setIsHelpModalOpen(false);
+
+  const { isOpen: isHelpModalOpen, open: openHelpModal, close: closeHelpModal } = useModal();
 
   return (
     <div className="min-h-screen py-8 px-4">
@@ -94,7 +97,7 @@ function App() {
           <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
             {/* список задач */}
             <TodoList
-              todos={filteredTodos}
+              todos={todos}
               {...{ onToggle: toggleTodo, onDelete: deleteTodo, onEdit: startEdit }}
             />
           </div>
