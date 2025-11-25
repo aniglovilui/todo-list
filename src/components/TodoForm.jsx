@@ -1,13 +1,13 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import { Plus } from 'lucide-react';
 
-const TodoForm = ({ onAdd, editingTodo, onSaveEdit, onCancelEdit }) => {
+const TodoForm = ({ inputText, setInputText, onAdd, editingTodo, onSaveEdit, onCancelEdit }) => {
   // Используем editingTodo.text как начальное значение
-  const [inputValue, setInputValue] = useState(editingTodo?.text || '');
+  // const [inputValue, setInputValue] = useState(editingTodo?.text || '');
 
   const handleSubmit = e => {
     e.preventDefault();
-    const trimmedValue = inputValue.trim();
+    const trimmedValue = inputText.trim();
 
     if (trimmedValue) {
       if (editingTodo) {
@@ -15,12 +15,11 @@ const TodoForm = ({ onAdd, editingTodo, onSaveEdit, onCancelEdit }) => {
       } else {
         onAdd(trimmedValue);
       }
-      setInputValue('');
+      // Не сбрасываем inputText здесь - это делается в App после успешного добавления/сохранения
     }
   };
 
   const handleCancel = () => {
-    setInputValue('');
     onCancelEdit();
   };
 
@@ -29,10 +28,11 @@ const TodoForm = ({ onAdd, editingTodo, onSaveEdit, onCancelEdit }) => {
       <div className="flex space-x-2">
         <input
           type="text"
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
+          value={inputText}
+          onChange={e => setInputText(e.target.value)}
           placeholder={editingTodo ? 'Редактировать задачу...' : 'Добавить новую задачу...'}
           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+          autoFocus={!!editingTodo} // Автофокус при редактировании
         />
         <button
           type="submit"

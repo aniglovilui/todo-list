@@ -2,27 +2,98 @@ import { useState, useEffect } from 'react';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import TodoFilter from './components/TodoFilter';
-import { ClipboardList, Lightbulb, HelpCircle } from 'lucide-react';
+import { ClipboardList, HelpCircle } from 'lucide-react';
 
 function App() {
-  // Используем ленивую инициализацию состояния
-  const [todos, setTodos] = useState(() => {
-    // Выполняется только при первоначальном рендере
+  // функция инициализации начальных состояний
+  const initializeState = () => {
     try {
       const savedTodos = localStorage.getItem('todos');
-      return savedTodos ? JSON.parse(savedTodos) : [];
+      const savedInputText = localStorage.getItem('todoInputText');
+      const savedEditingId = localStorage.getItem('editingTodoId');
+      const savedFilter = localStorage.getItem('todoFilter');
+
+      const todos = savedTodos ? JSON.parse(savedTodos) : [];
+      const inputText = savedInputText || '';
+      const filter = savedFilter || 'all';
+
+      // восстанавливаем редактирование только если задача существует
+      let editingTodo = null;
+      if (savedEditingId) {
+        editingTodo = todos.find(todo => todo.id === savedEditingId) || null;
+        // если задача не найдена очищаем невалидный id
+        if (!editingTodo) {
+          localStorage.removeItem('editingTodoId');
+        }
+      }
+
+      return {
+        todos,
+        inputText,
+        editingTodo,
+        editingTodoId: editingTodo ? savedEditingId : null,
+        filter,
+      };
     } catch (error) {
-      console.error('Error loading todos from localStorage:', error);
-      return [];
+      console.error('Error loading state from localStorage:', error);
+      return {
+        todos: [],
+        inputText: '',
+        editingTodo: null,
+        editingTodoId: null,
+        filter: 'all',
+      };
     }
-  });
+  };
 
-  const [filter, setFilter] = useState('all');
-  const [editingTodo, setEditingTodo] = useState(null);
+  const initialState = initializeState();
 
+  const [todos, setTodos] = useState(initialState.todos);
+  const [filter, setFilter] = useState(initialState.filter);
+  const [editingTodo, setEditingTodo] = useState(initialState.editingTodo);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [inputText, setInputText] = useState(initialState.inputText);
+  const [editingTodoId, setEditingTodoId] = useState(initialState.editingTodoId);
 
-  // Обработчик нажатия Escape
+  // сохранения в localStorage
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('todoFilter', filter);
+    } catch (error) {
+      console.error('Error saving filter to localStorage:', error);
+    }
+  }, [filter]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('todoInputText', inputText);
+    } catch (error) {
+      console.error('Error saving input text:', error);
+    }
+  }, [inputText]);
+
+  useEffect(() => {
+    try {
+      if (editingTodoId) {
+        localStorage.setItem('editingTodoId', editingTodoId);
+      } else {
+        localStorage.removeItem('editingTodoId');
+      }
+    } catch (error) {
+      console.error('Error saving editing state:', error);
+    }
+  }, [editingTodoId]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    } catch (error) {
+      console.error('Error saving todos to localStorage:', error);
+    }
+  }, [todos]);
+
+  // обработчик esc для модалки ????????????????
   useEffect(() => {
     const handleEscape = e => {
       if (e.key === 'Escape' && isHelpModalOpen) {
@@ -34,15 +105,7 @@ function App() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isHelpModalOpen]);
 
-  // Сохранение в localStorage при изменении todos
-  useEffect(() => {
-    try {
-      localStorage.setItem('todos', JSON.stringify(todos));
-    } catch (error) {
-      console.error('Error saving todos to localStorage:', error);
-    }
-  }, [todos]);
-
+  // фильтрация задач ?????????????????????
   const filteredTodos = todos.filter(todo => {
     switch (filter) {
       case 'active':
@@ -58,6 +121,7 @@ function App() {
   const completedTodos = todos.filter(todo => todo.completed).length;
   const activeTodos = totalTodos - completedTodos;
 
+  // обработчики
   const addTodo = text => {
     const newTodo = {
       id: Date.now().toString(),
@@ -65,7 +129,8 @@ function App() {
       completed: false,
       createdAt: new Date().toISOString(),
     };
-    setTodos(prevTodos => [...prevTodos, newTodo]); // вспомнить почему функцией
+    setTodos(prevTodos => [...prevTodos, newTodo]);
+    setInputText('');
   };
 
   const toggleTodo = id => {
@@ -76,10 +141,18 @@ function App() {
 
   const deleteTodo = id => {
     setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+
+    if (editingTodo && editingTodo.id === id) {
+      setEditingTodo(null);
+      setEditingTodoId(null);
+      setInputText('');
+    }
   };
 
   const startEdit = todo => {
     setEditingTodo(todo);
+    setEditingTodoId(todo.id);
+    setInputText(todo.text);
   };
 
   const saveEdit = (id, newText) => {
@@ -87,10 +160,18 @@ function App() {
       prevTodos.map(todo => (todo.id === id ? { ...todo, text: newText } : todo))
     );
     setEditingTodo(null);
+    setEditingTodoId(null);
+    setInputText('');
   };
 
   const cancelEdit = () => {
     setEditingTodo(null);
+    setEditingTodoId(null);
+    setInputText('');
+  };
+
+  const handleFilterChange = newFilter => {
+    setFilter(newFilter);
   };
 
   const openHelpModal = () => setIsHelpModalOpen(true);
@@ -99,7 +180,7 @@ function App() {
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Заголовок */}
+        {/* заголовок */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <ClipboardList size={32} className="text-white" />
@@ -108,10 +189,10 @@ function App() {
           {/* <p className="text-white/80">Организуйте свои задачи эффективно</p> */}
         </div>
 
-        {/* Основной контейнер */}
+        {/* основной контейнер */}
         <div className="flex flex-col h-[80vh] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6">
           <div className="flex-shrink-0">
-            {/* Статистика */}
+            {/* статистика */}
             <div className="grid grid-cols-3 gap-4 mb-6 text-center">
               <div className="bg-blue-100 p-3 rounded-lg">
                 <div className="text-2xl font-bold text-blue-600">{totalTodos}</div>
@@ -127,46 +208,30 @@ function App() {
               </div>
             </div>
 
-            {/* Форма добавления */}
+            {/* форма добавления */}
             <TodoForm
-              key={editingTodo ? editingTodo.id : 'create'} // Добавляем ключ
+              key={editingTodo ? editingTodo.id : 'create'}
+              inputText={inputText}
+              setInputText={setInputText}
               onAdd={addTodo}
               editingTodo={editingTodo}
               onSaveEdit={saveEdit}
               onCancelEdit={cancelEdit}
             />
 
-            {/* Фильтры */}
-            <TodoFilter currentFilter={filter} onFilterChange={setFilter} />
+            {/* фильтры */}
+            <TodoFilter currentFilter={filter} onFilterChange={handleFilterChange} />
           </div>
 
           <div className="flex-1 overflow-y-auto min-h-0">
-            {/* Список задач */}
+            {/* список задач */}
             <TodoList
               todos={filteredTodos}
               {...{ onToggle: toggleTodo, onDelete: deleteTodo, onEdit: startEdit }}
             />
           </div>
 
-          {/* Подсказки */}
-          {/* <div className="flex-shrink-0 mt-6 text-center text-sm text-gray-500 space-y-1">
-            <div
-              onClick={toggleTips}
-              className="flex justify-center items-center space-x-2 cursor-pointer"
-            >
-              <Lightbulb size={16} className="text-yellow-500" />
-              <span className="text-sm font-medium">Подсказки</span>
-            </div>
-            {showTips && ( //переделать в ul?
-              <div>
-                <p>• Кликните на круг для отметки выполнения</p>
-                <p>• Используйте иконку карандаша для редактирования</p>
-                <p>• Задачи сохраняются автоматически</p>
-              </div>
-            )}
-          </div> */}
-
-          {/* Нижняя часть - кнопка вместо подсказок */}
+          {/* подсказки */}
           <div className="flex-shrink-0 mt-4 mx-auto">
             <button
               onClick={openHelpModal}
@@ -179,7 +244,7 @@ function App() {
         </div>
       </div>
 
-      {/* Модальное окно подсказок */}
+      {/* модальное окно подсказок */}
       {isHelpModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
@@ -187,10 +252,10 @@ function App() {
         >
           <div
             className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto"
-            onClick={e => e.stopPropagation()} // Предотвращаем закрытие при клике на контент
+            onClick={e => e.stopPropagation()} // предотвращаем закрытие при клике на контент
           >
             <div className="p-6">
-              {/* Заголовок модалки */}
+              {/* заголовок модалки */}
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-800 flex items-center space-x-2">
                   <HelpCircle size={24} className="text-blue-500" />
@@ -211,7 +276,7 @@ function App() {
                 </button>
               </div>
 
-              {/* Содержимое подсказок */}
+              {/* содержимое подсказок */}
               <div className="space-y-4 text-gray-600">
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
@@ -276,7 +341,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Горячие клавиши */}
+              {/* горячие клавиши */}
               <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-semibold text-gray-800 mb-2">Горячие клавиши</h3>
                 <div className="space-y-2 text-sm">
@@ -291,7 +356,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Кнопка закрытия */}
+              {/* кнопка закрытия */}
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={closeHelpModal}
