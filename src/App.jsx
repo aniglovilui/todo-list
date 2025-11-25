@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import TodoFilter from './components/TodoFilter';
+import TodoStats from './components/TodoStats';
 import HelpModal from './components/HelpModal';
 import { ClipboardList, HelpCircle } from 'lucide-react';
 
@@ -197,20 +198,7 @@ function App() {
         <div className="flex flex-col h-[80vh] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6">
           <div className="flex-shrink-0">
             {/* статистика */}
-            <div className="grid grid-cols-3 gap-4 mb-6 text-center">
-              <div className="bg-blue-100 p-3 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{totalTodos}</div>
-                <div className="text-sm text-blue-500">Всего</div>
-              </div>
-              <div className="bg-yellow-100 p-3 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-600">{activeTodos}</div>
-                <div className="text-sm text-yellow-500">Активные</div>
-              </div>
-              <div className="bg-green-100 p-3 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{completedTodos}</div>
-                <div className="text-sm text-green-500">Выполнены</div>
-              </div>
-            </div>
+            <TodoStats total={totalTodos} active={activeTodos} completed={completedTodos} />
 
             {/* форма добавления */}
             <TodoForm
