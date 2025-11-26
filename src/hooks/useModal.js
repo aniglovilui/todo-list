@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 export const useModal = (initialState = false) => {
   const [isOpen, setIsOpen] = useState(initialState);
 
-  // обработчик Escape
   useEffect(() => {
     if (!isOpen) return;
 

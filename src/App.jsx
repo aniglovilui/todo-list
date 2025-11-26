@@ -1,4 +1,3 @@
-// import { useState, useEffect } from 'react';
 import { useTodos } from './hooks/useTodos';
 import { useModal } from './hooks/useModal';
 import TodoForm from './components/TodoForm';
@@ -38,7 +37,6 @@ function App() {
             <ClipboardList size={32} className="text-white" />
             <h1 className="text-4xl font-bold text-white">Мой список дел</h1>
           </div>
-          {/* <p className="text-white/80">Организуйте свои задачи эффективно</p> */}
         </div>
 
         {/* основной контейнер */}
