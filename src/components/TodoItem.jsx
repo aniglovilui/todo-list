@@ -4,7 +4,7 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
   const { id, text, completed } = todo;
   return (
     <div
-      className={`flex items-center justify-between p-4 bg-white rounded-lg shadow-md transition-all duration-200 ${
+      className={`flex items-center justify-between p-2 sm:p-4 space-x-1 sm:space-x-2 bg-white rounded-lg shadow-md transition-all duration-200 ${
         completed ? 'opacity-60' : 'opacity-100'
       }`}
     >
@@ -18,12 +18,16 @@ const TodoItem = ({ todo, onToggle, onDelete, onEdit }) => {
           {completed && <Check size={14} className="text-white" />}
         </button>
 
-        <span className={`flex-1 ${completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+        <div
+          className={`break-words flex-1 ${
+            completed ? 'line-through text-gray-500' : 'text-gray-800'
+          }`}
+        >
           {text}
-        </span>
+        </div>
       </div>
 
-      <div className="flex space-x-2">
+      <div className="flex space-x-1 sm:space-x-2">
         <button
           onClick={() => onEdit(todo)}
           className="p-1 text-blue-500 hover:bg-blue-50 rounded transition-colors"

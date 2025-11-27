@@ -82,13 +82,13 @@ const HelpModal = ({ isOpen, onClose }) => {
         className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto modal-content"
         onClick={e => e.stopPropagation()}
       >
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* заголовок */}
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center space-x-2">
-              <HelpCircle size={24} className="text-blue-500" />
-              <span>Подсказки по использованию</span>
-            </h2>
+            <div className="text-lg sm:text-xl font-bold text-gray-800 flex items-center space-x-3">
+              {/* <HelpCircle size={24} className="text-blue-500" /> */}
+              <h2 className="text-wrap">Подсказки по использованию</h2>
+            </div>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
@@ -118,9 +118,9 @@ const HelpModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* горячие клавиши */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <div className="mt-6 p-2 sm:p-4 bg-gray-50 rounded-lg">
             <h3 className="font-semibold text-gray-800 mb-2">Горячие клавиши</h3>
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-xs sm:text-sm">
               {hotKeys.map(({ title, description }) => (
                 <div key={title} className="flex justify-between">
                   <kbd className="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded">

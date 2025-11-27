@@ -36,4 +36,12 @@ body {
   .backdrop-blur-sm {
     backdrop-filter: blur(4px);
   }
+
+  /* перенос текста */
+  .break-words {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+  }
 }

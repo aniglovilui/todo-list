@@ -29,18 +29,18 @@ function App() {
   const { isOpen: isHelpModalOpen, open: openHelpModal, close: closeHelpModal } = useModal();
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="min-h-screen pt-8 pb-2 sm:py-8 px-2 md:px-4">
       <div className="max-w-2xl mx-auto">
         {/* заголовок */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-4 sm:mb-8">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <ClipboardList size={32} className="text-white" />
-            <h1 className="text-4xl font-bold text-white">Мой список дел</h1>
+            <h1 className="text-xl md:text-4xl font-bold text-white">Мой список дел</h1>
           </div>
         </div>
 
         {/* основной контейнер */}
-        <div className="flex flex-col h-[80vh] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-6">
+        <div className="flex flex-col h-[85vh] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-3 md:p-6">
           <div className="flex-shrink-0">
             {/* статистика */}
             <TodoStats total={totalTodos} active={activeTodos} completed={completedTodos} />
@@ -60,7 +60,7 @@ function App() {
             <TodoFilter currentFilter={filter} onFilterChange={handleFilterChange} />
           </div>
 
-          <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto min-h-0 mb-4 custom-scrollbar">
             {/* список задач */}
             <TodoList
               todos={todos}
@@ -69,7 +69,7 @@ function App() {
           </div>
 
           {/* подсказки */}
-          <div className="flex-shrink-0 mt-4 mx-auto">
+          <div className="flex-shrink-0 mx-auto">
             <button
               onClick={openHelpModal}
               className="flex items-center space-x-2 text-blue-500 hover:text-blue-600 transition-colors"
