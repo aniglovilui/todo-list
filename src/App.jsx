@@ -40,7 +40,7 @@ function App() {
         </div>
 
         {/* основной контейнер */}
-        <div className="flex flex-col h-[85vh] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-3 md:p-6">
+        <div className="flex flex-col h-[79vh] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-3 md:p-6">
           <div className="flex-shrink-0">
             {/* статистика */}
             <TodoStats total={totalTodos} active={activeTodos} completed={completedTodos} />
